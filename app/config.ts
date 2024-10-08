@@ -5,8 +5,8 @@ type CustomerModelMap = {
 export const CONFIG = {
   API_KEY: "your_api_key_here",
   CF_TRANSLATE_MODEL: "@cf/qwen/qwen1.5-14b-chat-awq",
-  CF_ACCOUNT_ID: "8d75f22605db146a86f364ff865aa219",
-  CF_API_TOKEN: "50--IhT1-cDbmaiM_tGXoJCrKCqYQFv9GK7yfpdN",
+  CF_ACCOUNT_ID: "your_account_id_here",
+  CF_API_TOKEN: "your_api_token_here",
   CF_IS_TRANSLATE: true,
   USE_EXTERNAL_API: false,
   EXTERNAL_API: "",
@@ -21,7 +21,7 @@ export const CONFIG = {
   } as CustomerModelMap,
   IMAGE_EXPIRATION: 60 * 30,
   KV_NAMESPACE: "IMAGE_KV",
-  KV_ID: "528e12da11b1456b869cd0d43ac56bf4"
+  KV_ID: "your_kv_id_here"
 };
 
 export type Config = typeof CONFIG;

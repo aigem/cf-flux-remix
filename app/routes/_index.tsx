@@ -5,7 +5,16 @@ import { CONFIG } from "../config";
 import { AppError } from "../utils/error";
 
 export const loader: LoaderFunction = async ({ context }) => {
-  const appContext = createAppContext(context);
+  console.log("Loader started");
+  let appContext;
+  try {
+    appContext = createAppContext(context);
+    console.log("App context created:", appContext);
+  } catch (error) {
+    console.error("Error creating app context:", error);
+    return json({ error: "Failed to create app context" }, { status: 500 });
+  }
+
   const { env, imageGenerationService } = appContext;
 
   let cfAiStatus = "未连接";
@@ -19,19 +28,15 @@ export const loader: LoaderFunction = async ({ context }) => {
     KV_ID: CONFIG.KV_ID,
   };
 
-  console.log("Environment keys:", Object.keys(env));
-  console.log("KV_NAMESPACE value:", CONFIG.KV_NAMESPACE);
+  console.log("Environment:", env);
+  console.log("Config status:", configStatus);
 
   try {
     await imageGenerationService.testCfAiConnection();
     cfAiStatus = "已连接";
   } catch (error) {
     console.error("CF AI 连接测试失败:", error);
-    if (error instanceof AppError) {
-      cfAiStatus = `连接失败: ${error.message}`;
-    } else {
-      cfAiStatus = "连接失败: 未知错误";
-    }
+    cfAiStatus = error instanceof AppError ? `连接失败: ${error.message}` : "连接失败: 未知错误";
   }
 
   try {
@@ -41,11 +46,7 @@ export const loader: LoaderFunction = async ({ context }) => {
       const testValue = await env.IMAGE_KV.get(testKey);
       await env.IMAGE_KV.delete(testKey);
 
-      if (testValue === "test_value") {
-        kvStatus = "已连接";
-      } else {
-        kvStatus = "连接异常：无法正确读写数据";
-      }
+      kvStatus = testValue === "test_value" ? "已连接" : "连接异常：无法正确读写数据";
     } else {
       console.error("IMAGE_KV not found in env");
       kvStatus = "未找到 IMAGE_KV";
@@ -55,6 +56,7 @@ export const loader: LoaderFunction = async ({ context }) => {
     kvStatus = "连接失败: " + (error instanceof Error ? error.message : "未知错误");
   }
 
+  console.log("Loader completed");
   return json({ cfAiStatus, kvStatus, configStatus });
 };
 

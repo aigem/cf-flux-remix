@@ -17,4 +17,4 @@ enabled = true
 # KV 命名空间配置
 [[kv_namespaces]]
 binding = "IMAGE_KV"
-id = "528e12da11b1456b869cd0d43ac56bf4"
+id = "your_kv_id_here"

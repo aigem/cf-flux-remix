@@ -1,4 +1,4 @@
 interface Env {
   IMAGE_KV: KVNamespace;
-  // 其他环境变量...
+  // 添加其他可能的环境变量
 }
