@@ -1,6 +1,8 @@
 export const CONFIG = {
-  API_KEY: process.env.API_KEY || "",
-  CF_TRANSLATE_MODEL: process.env.CF_TRANSLATE_MODEL || "@cf/qwen/qwen1.5-14b-chat-awq",
+  API_KEY: import.meta.env.API_KEY || "",
+  CF_TRANSLATE_MODEL: import.meta.env.CF_TRANSLATE_MODEL || "",
+  CF_ACCOUNT_ID: import.meta.env.CF_ACCOUNT_ID || "",
+  CF_API_TOKEN: import.meta.env.CF_API_TOKEN || "",
   CF_IS_TRANSLATE: true,
   USE_EXTERNAL_API: false,
   EXTERNAL_API: "",
