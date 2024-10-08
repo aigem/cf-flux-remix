@@ -8,7 +8,7 @@ import type { EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
 import * as isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
-import { createConfig } from "./config";
+import { CONFIG } from "./config";
 
 export default async function handleRequest(
   request: Request,
@@ -17,22 +17,32 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: any
 ) {
-  const config = createConfig(loadContext);
-  (global as any).APP_CONFIG = config;
+  (global as any).APP_CONFIG = CONFIG;
 
-  const body = await renderToReadableStream(
-    <RemixServer context={remixContext} url={request.url} />,
-    {
-      signal: request.signal,
-      onError(error: unknown) {
-        console.error(error);
-        responseStatusCode = 500;
-      },
-    }
-  );
+  let body;
+  try {
+    body = await renderToReadableStream(
+      <RemixServer context={remixContext} url={request.url} />,
+      {
+        signal: request.signal,
+        onError(error: unknown) {
+          console.error("Rendering error:", error);
+          responseStatusCode = 500;
+        },
+      }
+    );
+  } catch (error) {
+    console.error("Failed to render to stream:", error);
+    return new Response("Internal Server Error", { status: 500 });
+  }
 
   if (isbot.isbot(request.headers.get("user-agent"))) {
-    await body.allReady;
+    try {
+      await body.allReady;
+    } catch (error) {
+      console.error("Failed to wait for body to be ready:", error);
+      return new Response("Internal Server Error", { status: 500 });
+    }
   }
 
   responseHeaders.set("Content-Type", "text/html");

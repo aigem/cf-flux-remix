@@ -13,7 +13,7 @@ export const action: ActionFunction = async ({ request, context }) => {
     const { config, imageGenerationService } = appContext;
 
     const data = await request.json();
-    const { messages, model: requestedModel, stream } = data;
+    const { messages, model: requestedModel, stream } = data as { messages: any[], model: string, stream: boolean };
     const userMessage = messages.find(msg => msg.role === "user")?.content;
 
     if (!userMessage) {

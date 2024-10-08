@@ -1,5 +1,5 @@
 import { AppError } from '../utils/error';
-import type { Config } from '../config';
+import { Config } from '../config';
 
 export class ImageGenerationService {
   constructor(private env: Env, private config: Config) {}
@@ -61,19 +61,26 @@ export class ImageGenerationService {
 
   private async postRequest(model: string, jsonBody: object): Promise<Response> {
     const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${this.config.CF_ACCOUNT_ID}/ai/run/${model}`;
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.CF_API_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(jsonBody)
-    });
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.CF_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonBody)
+      });
 
-    if (!response.ok) {
-      throw new AppError('Cloudflare API request failed: ' + response.status, response.status);
+      if (!response.ok) {
+        throw new AppError(`Cloudflare API request failed: ${response.status}`, response.status);
+      }
+      return response;
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
+      }
+      throw new AppError('Failed to connect to Cloudflare API', 500);
     }
-    return response;
   }
 
   private async storeImage(imageBuffer: ArrayBuffer): Promise<string> {
