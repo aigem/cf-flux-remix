@@ -1,11 +1,16 @@
-import type { ActionFunction } from "@remix-run/cloudflare";
+import type { ActionFunction, LoaderFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
 import { createAppContext } from "~/context";
 import { withCors } from "~/middleware/cors";
+import { withAuth } from "~/middleware/auth";
 import { handleError } from "~/utils/error";
 import { CONFIG } from "~/config";
 
-export const action: ActionFunction = withCors(async ({ request, context }) => {
+export const loader: LoaderFunction = withCors(withAuth(() => {
+  return json({ error: "此 API 端点仅支持 POST 请求" }, { status: 405 });
+}));
+
+export const action: ActionFunction = withCors(withAuth(async ({ request, context }) => {
   try {
     const appContext = createAppContext(context);
     const { imageGenerationService } = appContext;
@@ -18,12 +23,17 @@ export const action: ActionFunction = withCors(async ({ request, context }) => {
       return json({ error: "未找到用户消息" }, { status: 400 });
     }
 
+    const isTranslate = extractTranslate(userMessage);
     const originalPrompt = cleanPromptString(userMessage);
     const model = CONFIG.CUSTOMER_MODEL_MAP[requestedModel] || CONFIG.CUSTOMER_MODEL_MAP["SD-XL-Lightning-CF"];
 
-    const imageUrl = await imageGenerationService.generateImage(originalPrompt, model);
+    const translatedPrompt = isTranslate ? 
+      await imageGenerationService.translatePrompt(originalPrompt, model === CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]) : 
+      originalPrompt;
 
-    const responseContent = generateResponseContent(originalPrompt, imageUrl, model);
+    const imageUrl = await imageGenerationService.generateImage(translatedPrompt, model);
+
+    const responseContent = generateResponseContent(originalPrompt, translatedPrompt, imageUrl, model);
 
     return stream ?
       handleStreamResponse(responseContent, model) :
@@ -46,14 +56,20 @@ export const action: ActionFunction = withCors(async ({ request, context }) => {
   } catch (error) {
     return handleError(error);
   }
-});
+}));
+
+function extractTranslate(prompt: string): boolean {
+  const match = prompt.match(/---n?tl/);
+  return match ? match[0] === "---tl" : CONFIG.CF_IS_TRANSLATE;
+}
 
 function cleanPromptString(prompt: string): string {
   return prompt.replace(/---n?tl/, "").trim();
 }
 
-function generateResponseContent(originalPrompt: string, imageUrl: string, model: string): string {
+function generateResponseContent(originalPrompt: string, translatedPrompt: string, imageUrl: string, model: string): string {
   return `🎨 原始提示词：${originalPrompt}\n` +
+         `🌐 翻译后的提示词：${translatedPrompt}\n` +
          `🖼️ 绘图模型：${model}\n` +
          `🌟 图像生成成功！\n` +
          `以下是结果：\n\n` +

@@ -1,15 +1,16 @@
+import { json } from "@remix-run/cloudflare";
+
 export class AppError extends Error {
-  constructor(message: string, public statusCode: number = 500) {
+  constructor(public message: string, public status: number = 500) {
     super(message);
-    this.name = "AppError";
+    this.name = 'AppError';
   }
 }
 
 export function handleError(error: unknown) {
+  console.error(error);
   if (error instanceof AppError) {
-    console.error(`[${error.statusCode}] ${error.message}`);
-    return json({ error: error.message }, { status: error.statusCode });
+    return json({ error: error.message }, { status: error.status });
   }
-  console.error("Unexpected error:", error);
-  return json({ error: "Internal Server Error" }, { status: 500 });
+  return json({ error: "An unexpected error occurred" }, { status: 500 });
 }

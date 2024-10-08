@@ -1,3 +1,7 @@
+type CustomerModelMap = {
+  [key: string]: string;
+};
+
 export const CONFIG = {
   API_KEY: import.meta.env.API_KEY || "",
   CF_TRANSLATE_MODEL: import.meta.env.CF_TRANSLATE_MODEL || "",
@@ -14,6 +18,6 @@ export const CONFIG = {
     "SD-XL-Bash-CF": "@cf/stabilityai/stable-diffusion-xl-base-1.0",
     "SD-XL-Lightning-CF": "@cf/bytedance/stable-diffusion-xl-lightning",
     "FLUX.1-Schnell-CF": "@cf/black-forest-labs/flux-1-schnell"
-  },
+  } as CustomerModelMap,
   IMAGE_EXPIRATION: 60 * 30
 };
