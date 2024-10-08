@@ -12,9 +12,9 @@ enabled = true
 
 [vars]
 API_KEY = "your_api_key"
-CF_TRANSLATE_MODEL = "cf/qwen/qwen1.5-14b-chat-awq"
-CF_ACCOUNT_ID = "8d75f22605db146a86f364ff865aa219"
-CF_API_TOKEN = "50--IhT1-cDbmaiM_tGXoJCrKCqYQFv9GK7yfpdN"
+CF_TRANSLATE_MODEL = "@cf/qwen/qwen1.5-14b-chat-awq"
+CF_ACCOUNT_ID = "your_account_id"
+CF_API_TOKEN = "your_api_token"
 
 [[kv_namespaces]]
 binding = "IMAGE_KV"

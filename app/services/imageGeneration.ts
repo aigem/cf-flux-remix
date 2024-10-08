@@ -1,18 +1,18 @@
-import { CONFIG } from '~/config';
-import { AppError } from '~/utils/error';
+import { AppError } from '../utils/error';
+import type { Config } from '../config';
 
 export class ImageGenerationService {
-  constructor(private env: Env) {}
+  constructor(private env: Env, private config: Config) {}
 
   async generateImage(prompt: string, model: string): Promise<string> {
-    const isFluxModel = model === CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"];
+    const isFluxModel = model === this.config.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"];
     return isFluxModel ? 
       this.generateFluxImage(model, prompt) :
       this.generateStandardImage(model, prompt);
   }
 
   async translatePrompt(prompt: string, isFluxModel: boolean): Promise<string> {
-    if (!CONFIG.CF_IS_TRANSLATE) return prompt;
+    if (!this.config.CF_IS_TRANSLATE) return prompt;
     const promptModel = this.determinePromptModel();
     return isFluxModel ? 
       await this.getFluxPrompt(prompt, promptModel) :
@@ -20,8 +20,8 @@ export class ImageGenerationService {
   }
 
   private determinePromptModel(): string {
-    return (CONFIG.USE_EXTERNAL_API && CONFIG.EXTERNAL_API && CONFIG.EXTERNAL_MODEL && CONFIG.EXTERNAL_API_KEY) ?
-      CONFIG.EXTERNAL_MODEL : CONFIG.CF_TRANSLATE_MODEL;
+    return (this.config.USE_EXTERNAL_API && this.config.EXTERNAL_API && this.config.EXTERNAL_MODEL && this.config.EXTERNAL_API_KEY) ?
+      this.config.EXTERNAL_MODEL : this.config.CF_TRANSLATE_MODEL;
   }
 
   private async getPrompt(prompt: string, model: string): Promise<string> {
@@ -51,7 +51,7 @@ export class ImageGenerationService {
   }
 
   private async generateFluxImage(model: string, prompt: string): Promise<string> {
-    const jsonBody = { prompt, num_steps: CONFIG.FLUX_NUM_STEPS };
+    const jsonBody = { prompt, num_steps: this.config.FLUX_NUM_STEPS };
     const response = await this.postRequest(model, jsonBody);
     const jsonResponse = await response.json();
     const base64ImageData = jsonResponse.result.image;
@@ -60,11 +60,11 @@ export class ImageGenerationService {
   }
 
   private async postRequest(model: string, jsonBody: object): Promise<Response> {
-    const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${this.env.CF_ACCOUNT_ID}/ai/run/${model}`;
+    const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${this.config.CF_ACCOUNT_ID}/ai/run/${model}`;
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.env.CF_API_TOKEN}`,
+        'Authorization': `Bearer ${this.config.CF_API_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(jsonBody)
@@ -79,7 +79,7 @@ export class ImageGenerationService {
   private async storeImage(imageBuffer: ArrayBuffer): Promise<string> {
     const key = `image_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     await this.env.IMAGE_KV.put(key, imageBuffer, {
-      expirationTtl: CONFIG.IMAGE_EXPIRATION,
+      expirationTtl: this.config.IMAGE_EXPIRATION,
       metadata: { contentType: 'image/png' }
     });
     return `/image/${key}`;
@@ -95,7 +95,7 @@ export class ImageGenerationService {
   }
 
   async testCfAiConnection(): Promise<void> {
-    const testModel = CONFIG.CF_TRANSLATE_MODEL;
+    const testModel = this.config.CF_TRANSLATE_MODEL;
     const testPrompt = "Hello, world!";
     await this.postRequest(testModel, { messages: [{ role: "user", content: testPrompt }] });
   }
