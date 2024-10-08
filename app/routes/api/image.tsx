@@ -1,7 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
-import { createAppContext } from "../context";
-import { handleError } from "../utils/error";
+import { createAppContext } from "../../context";
+import { handleError } from "../../utils/error";
 
 export const loader: LoaderFunction = () => {
   return json({ error: "此 API 端点仅支持 POST 请求" }, { status: 405 });

@@ -4,7 +4,8 @@ type CustomerModelMap = {
   [key: string]: string;
 };
 
-export function createConfig(env: Env) {
+export function createConfig(context: any) {
+  const env = context.env || {};
   return {
     API_KEY: env.API_KEY || LOCAL_CONFIG.API_KEY,
     CF_TRANSLATE_MODEL: env.CF_TRANSLATE_MODEL || LOCAL_CONFIG.CF_TRANSLATE_MODEL,

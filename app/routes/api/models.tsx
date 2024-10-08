@@ -1,6 +1,6 @@
 import type { LoaderFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
-import { createAppContext } from "../context";
+import { createAppContext } from "../../context";
 
 export const loader: LoaderFunction = async ({ context }) => {
   console.log("Models route accessed");
