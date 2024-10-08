@@ -2,9 +2,10 @@ import { useState } from "react";
 import { json } from "@remix-run/cloudflare";
 import { useActionData, Form } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/cloudflare";
-import { CONFIG } from "~/config";
+import { CONFIG } from "../config";
+import { createAppContext } from "../context";
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, context }) => {
   const formData = await request.formData();
   const prompt = formData.get("prompt") as string;
   const enhance = formData.get("enhance") === "true";
@@ -15,7 +16,9 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   try {
-    const result = await generateImage(enhance ? `---tl ${prompt}` : prompt, model);
+    const appContext = createAppContext(context);
+    const { imageGenerationService } = appContext;
+    const result = await imageGenerationService.generateImage(enhance ? `---tl ${prompt}` : prompt, model);
     return json(result);
   } catch (error) {
     console.error("生成图片时出错:", error);
