@@ -9,3 +9,13 @@ assets = { directory = "./build/client" }
 # Configuration: https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs
 [observability]
 enabled = true
+
+[vars]
+API_KEY = "your_api_key"
+CF_TRANSLATE_MODEL = "your_model"
+CF_ACCOUNT_ID = "your_account_id"
+CF_API_TOKEN = "your_api_token"
+
+[[kv_namespaces]]
+binding = "IMAGE_KV"
+id = "your_kv_id"
