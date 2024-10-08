@@ -1,3 +1,4 @@
+import type { FC, ChangeEvent } from "react";
 import { useState } from "react";
 import { json } from "@remix-run/cloudflare";
 import { useActionData, Form } from "@remix-run/react";
@@ -5,11 +6,13 @@ import type { ActionFunction } from "@remix-run/cloudflare";
 import { CONFIG } from "../config";
 import { createAppContext } from "../context";
 
-export const action: ActionFunction = async ({ request, context }) => {
+export const action: ActionFunction = async ({ request, context }: { request: Request; context: any }) => {
   const formData = await request.formData();
   const prompt = formData.get("prompt") as string;
   const enhance = formData.get("enhance") === "true";
-  const model = CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"];
+  const model = formData.get("model") as string;
+  const size = formData.get("size") as string;
+  const numSteps = parseInt(formData.get("numSteps") as string, 10);
 
   if (!prompt) {
     return json({ error: "未找到提示词" }, { status: 400 });
@@ -18,7 +21,12 @@ export const action: ActionFunction = async ({ request, context }) => {
   try {
     const appContext = createAppContext(context);
     const { imageGenerationService } = appContext;
-    const result = await imageGenerationService.generateImage(enhance ? `---tl ${prompt}` : prompt, model);
+    const result = await imageGenerationService.generateImage(
+      enhance ? `---tl ${prompt}` : prompt,
+      model,
+      size,
+      numSteps
+    );
     return json(result);
   } catch (error) {
     console.error("生成图片时出错:", error);
@@ -53,9 +61,12 @@ async function generateImage(prompt: string, model: string): Promise<{ prompt: s
   };
 }
 
-export default function GenerateImage() {
+const GenerateImage: FC = () => {
   const [prompt, setPrompt] = useState("");
   const [enhance, setEnhance] = useState(false);
+  const [model, setModel] = useState(CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
+  const [size, setSize] = useState("1024x1024");
+  const [numSteps, setNumSteps] = useState(CONFIG.FLUX_NUM_STEPS);
   const actionData = useActionData<typeof action>();
 
   const handleEnhanceToggle = () => {
@@ -65,6 +76,13 @@ export default function GenerateImage() {
   const handleReset = () => {
     setPrompt("");
     setEnhance(false);
+    setModel(CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
+    setSize("1024x1024");
+    setNumSteps(CONFIG.FLUX_NUM_STEPS);
+  };
+
+  const handlePromptChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPrompt(e.target.value);
   };
 
   return (
@@ -83,10 +101,57 @@ export default function GenerateImage() {
               id="prompt"
               name="prompt"
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              onChange={handlePromptChange}
               className="w-full px-5 py-3 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70 transition duration-300 ease-in-out hover:bg-opacity-30"
               placeholder="请输入您的提示词..."
               required
+            />
+          </div>
+          <div>
+            <label htmlFor="model" className="block text-white text-lg font-semibold mb-3">
+              选择模型：
+            </label>
+            <select
+              id="model"
+              name="model"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              className="w-full px-5 py-3 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white bg-opacity-20 text-white transition duration-300 ease-in-out hover:bg-opacity-30"
+            >
+              {Object.entries(CONFIG.CUSTOMER_MODEL_MAP).map(([key, value]) => (
+                <option key={key} value={value}>{key}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="size" className="block text-white text-lg font-semibold mb-3">
+              图片尺寸：
+            </label>
+            <select
+              id="size"
+              name="size"
+              value={size}
+              onChange={(e) => setSize(e.target.value)}
+              className="w-full px-5 py-3 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white bg-opacity-20 text-white transition duration-300 ease-in-out hover:bg-opacity-30"
+            >
+              <option value="512x512">512x512</option>
+              <option value="768x768">768x768</option>
+              <option value="1024x1024">1024x1024</option>
+            </select>
+          </div>
+          <div>
+            <label htmlFor="numSteps" className="block text-white text-lg font-semibold mb-3">
+              生成步数：
+            </label>
+            <input
+              type="number"
+              id="numSteps"
+              name="numSteps"
+              value={numSteps}
+              onChange={(e) => setNumSteps(parseInt(e.target.value, 10))}
+              min="4"
+              max="8"
+              className="w-full px-5 py-3 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white bg-opacity-20 text-white transition duration-300 ease-in-out hover:bg-opacity-30"
             />
           </div>
           <div className="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0">
@@ -126,4 +191,6 @@ export default function GenerateImage() {
       </div>
     </div>
   );
-}
+};
+
+export default GenerateImage;
