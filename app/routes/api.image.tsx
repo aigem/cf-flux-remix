@@ -1,9 +1,9 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
-import { createAppContext } from "../../context";
-import { handleError } from "../../utils/error";
-import { withAuth } from "../../middleware/auth";
-import { withCors } from "../../middleware/cors";
+import { createAppContext } from "../context";
+import { handleError } from "../utils/error";
+import { withAuth } from "../middleware/auth";
+import { withCors } from "../middleware/cors";
 
 export const loader: LoaderFunction = withCors(withAuth(() => {
   return json({ error: "此 API 端点仅支持 POST 请求" }, { status: 405 });

@@ -1,5 +1,4 @@
 interface Env {
   IMAGE_KV: KVNamespace;
-  CF_ACCOUNT_ID: string;
-  CF_API_TOKEN: string;
+  // 其他环境变量...
 }

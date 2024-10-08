@@ -1,8 +1,8 @@
 import type { LoaderFunction } from "@remix-run/cloudflare";
 import { json } from "@remix-run/cloudflare";
-import { createAppContext } from "../../context";
-import { withAuth } from "../../middleware/auth";
-import { withCors } from "../../middleware/cors";
+import { createAppContext } from "../context";
+import { withAuth } from "../middleware/auth";
+import { withCors } from "../middleware/cors";
 
 export const loader: LoaderFunction = withCors(withAuth(async ({ context }) => {
   console.log("Models route accessed");
