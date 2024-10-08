@@ -6,7 +6,7 @@
 
 import type { EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
-import isbot from "isbot";
+import * as isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { createConfig } from "./config";
 
@@ -31,7 +31,7 @@ export default async function handleRequest(
     }
   );
 
-  if (isbot(request.headers.get("user-agent"))) {
+  if (isbot.isbot(request.headers.get("user-agent"))) {
     await body.allReady;
   }
 
