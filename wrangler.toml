@@ -14,7 +14,4 @@ assets = { directory = "./build/client" }
 [observability]
 enabled = true
 
-# KV 命名空间配置
-[[kv_namespaces]]
-binding = "IMAGE_KV"
-id = "your_kv_id_here"
+# 删除 KV 绑定部分

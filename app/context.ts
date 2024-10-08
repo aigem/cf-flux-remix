@@ -1,13 +1,8 @@
 import { ImageGenerationService } from "./services/imageGeneration";
-import { CONFIG, Config } from "./config";
+import { CONFIG } from "./config";
 
-export function createAppContext(context: any) {
-  if (!context || !context.env) {
-    throw new Error("Invalid context or missing env in context");
-  }
+export function createAppContext(context: { env: Env }) {
   return {
-    env: context.env as Env,
-    config: CONFIG as Config,
-    imageGenerationService: new ImageGenerationService(context.env as Env, CONFIG),
+    imageGenerationService: new ImageGenerationService(context.env, CONFIG),
   };
 }
