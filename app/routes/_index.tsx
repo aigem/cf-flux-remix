@@ -19,6 +19,10 @@ export const loader: LoaderFunction = async ({ context }) => {
     KV_ID: CONFIG.KV_ID,
   };
 
+  console.log("Environment keys:", Object.keys(env));
+  console.log("KV_NAMESPACE value:", CONFIG.KV_NAMESPACE);
+  console.log("KV binding:", env[CONFIG.KV_NAMESPACE]);
+
   try {
     await imageGenerationService.testCfAiConnection();
     cfAiStatus = "已连接";
