@@ -1,7 +1,7 @@
-import type { FC, ChangeEvent } from "react";
+import type { FC, ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { json } from "@remix-run/cloudflare";
-import { useActionData, Form } from "@remix-run/react";
+import { useActionData, Form, useNavigation } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/cloudflare";
 import { CONFIG } from "../config";
 import { createAppContext } from "../context";
@@ -68,6 +68,9 @@ const GenerateImage: FC = () => {
   const [size, setSize] = useState("1024x1024");
   const [numSteps, setNumSteps] = useState(CONFIG.FLUX_NUM_STEPS);
   const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
+
+  const isSubmitting = navigation.state === "submitting";
 
   const handleEnhanceToggle = () => {
     setEnhance(!enhance);
@@ -85,13 +88,19 @@ const GenerateImage: FC = () => {
     setPrompt(e.target.value);
   };
 
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    if (isSubmitting) {
+      e.preventDefault();
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 px-4">
       <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-md w-full">
         <h1 className="text-4xl font-extrabold text-white mb-8 text-center drop-shadow-lg">
           白嫖 CF 的 Flux 生成图片
         </h1>
-        <Form method="post" className="space-y-8">
+        <Form method="post" className="space-y-8" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="prompt" className="block text-white text-lg font-semibold mb-3">
               输入提示词：
@@ -160,6 +169,7 @@ const GenerateImage: FC = () => {
               onClick={handleEnhanceToggle}
               className={`flex-1 px-5 py-3 rounded-xl text-lg font-semibold text-white transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400
                           ${enhance ? "bg-gradient-to-r from-green-400 to-green-600" : "bg-gradient-to-r from-gray-400 to-gray-600"}`}
+              disabled={isSubmitting}
             >
               {enhance ? "已强化提示词" : "是否强化提示词"}
             </button>
@@ -168,14 +178,17 @@ const GenerateImage: FC = () => {
               type="button"
               onClick={handleReset}
               className="flex-1 px-5 py-3 rounded-xl text-lg font-semibold text-white bg-gradient-to-r from-yellow-400 to-yellow-600 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              disabled={isSubmitting}
             >
               重置
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-3 rounded-xl text-lg font-semibold text-white bg-gradient-to-r from-indigo-500 to-indigo-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className={`flex-1 px-5 py-3 rounded-xl text-lg font-semibold text-white transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-400
+                          ${isSubmitting ? "bg-gray-500 cursor-not-allowed" : "bg-gradient-to-r from-indigo-500 to-indigo-700"}`}
+              disabled={isSubmitting}
             >
-              提交
+              {isSubmitting ? "生成中..." : "提交"}
             </button>
           </div>
         </Form>
