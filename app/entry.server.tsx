@@ -10,6 +10,10 @@ import * as isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
 import { CONFIG } from "./config";
 
+declare global {
+  var APP_CONFIG: typeof CONFIG;
+}
+
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -17,7 +21,7 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: any
 ) {
-  (global as any).APP_CONFIG = CONFIG;
+  globalThis.APP_CONFIG = CONFIG;
 
   let body;
   try {

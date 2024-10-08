@@ -19,7 +19,9 @@ export const CONFIG = {
     "SD-XL-Lightning-CF": "@cf/bytedance/stable-diffusion-xl-lightning",
     "FLUX.1-Schnell-CF": "@cf/black-forest-labs/flux-1-schnell"
   } as CustomerModelMap,
-  IMAGE_EXPIRATION: 60 * 30
+  IMAGE_EXPIRATION: 60 * 30,
+  KV_NAMESPACE: "IMAGE_KV",
+  KV_ID: "528e12da11b1456b869cd0d43ac56bf4"
 };
 
 export type Config = typeof CONFIG;

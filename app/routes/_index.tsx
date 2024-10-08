@@ -30,13 +30,13 @@ export const loader: LoaderFunction = async ({ context }) => {
   }
 
   try {
-    if (env.IMAGE_KV) {
-      await env.IMAGE_KV.put("test_key", "test_value");
-      await env.IMAGE_KV.delete("test_key");
+    if (env[CONFIG.KV_NAMESPACE]) {
+      await env[CONFIG.KV_NAMESPACE].put("test_key", "test_value");
+      await env[CONFIG.KV_NAMESPACE].delete("test_key");
       kvStatus = "已连接";
     } else {
-      console.error("IMAGE_KV not found in env");
-      kvStatus = "未找到 IMAGE_KV";
+      console.error(`${CONFIG.KV_NAMESPACE} not found in env`);
+      kvStatus = `未找到 ${CONFIG.KV_NAMESPACE}`;
     }
   } catch (error) {
     console.error("KV 连接测试失败:", error);
