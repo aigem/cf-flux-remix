@@ -1,5 +1,5 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "my-remix-app"
+name = "cf-flux-remix"
 compatibility_date = "2024-10-04"
 main = "./build/worker/index.js"
 assets = { directory = "./build/client" }
