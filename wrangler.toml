@@ -18,4 +18,4 @@ CF_API_TOKEN = "your_api_token"
 
 [[kv_namespaces]]
 binding = "IMAGE_KV"
-id = "your_kv_id"
+id = "528e12da11b1456b869cd0d43ac56bf4"  # 请将这里替换为您在Cloudflare控制台中创建的KV命名空间的实际ID
