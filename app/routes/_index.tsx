@@ -21,7 +21,6 @@ export const loader: LoaderFunction = async ({ context }) => {
 
   console.log("Environment keys:", Object.keys(env));
   console.log("KV_NAMESPACE value:", CONFIG.KV_NAMESPACE);
-  console.log("KV binding:", env[CONFIG.KV_NAMESPACE]);
 
   try {
     await imageGenerationService.testCfAiConnection();
@@ -36,11 +35,11 @@ export const loader: LoaderFunction = async ({ context }) => {
   }
 
   try {
-    if (env[CONFIG.KV_NAMESPACE]) {
+    if (env.IMAGE_KV) {
       const testKey = `test_key_${Date.now()}`;
-      await env[CONFIG.KV_NAMESPACE].put(testKey, "test_value");
-      const testValue = await env[CONFIG.KV_NAMESPACE].get(testKey);
-      await env[CONFIG.KV_NAMESPACE].delete(testKey);
+      await env.IMAGE_KV.put(testKey, "test_value");
+      const testValue = await env.IMAGE_KV.get(testKey);
+      await env.IMAGE_KV.delete(testKey);
 
       if (testValue === "test_value") {
         kvStatus = "已连接";
@@ -48,8 +47,8 @@ export const loader: LoaderFunction = async ({ context }) => {
         kvStatus = "连接异常：无法正确读写数据";
       }
     } else {
-      console.error(`${CONFIG.KV_NAMESPACE} not found in env`);
-      kvStatus = `未找到 ${CONFIG.KV_NAMESPACE}`;
+      console.error("IMAGE_KV not found in env");
+      kvStatus = "未找到 IMAGE_KV";
     }
   } catch (error) {
     console.error("KV 连接测试失败:", error);
