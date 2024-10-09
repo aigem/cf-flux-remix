@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async ({ context }) => {
     const env = context.cloudflare.env;
 
     const envVariables = {
-        API_KEY: config.API_KEY ? "已设置" : "未设置",
+        API_KEY: config.API_KEY ? config.API_KEY : "未设置",
         CF_ACCOUNT_LIST: config.CF_ACCOUNT_LIST.length > 0 ? "已设置" : "未设置",
         CF_TRANSLATE_MODEL: config.CF_TRANSLATE_MODEL,
         CF_IS_TRANSLATE: config.CF_IS_TRANSLATE ? "true" : "false",
