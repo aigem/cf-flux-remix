@@ -14,4 +14,5 @@ assets = { directory = "./build/client" }
 [observability]
 enabled = true
 
-# 删除 KV 绑定部分
+[vars]
+getme = "测试获取环境变量专用"
