@@ -8,7 +8,8 @@ import type { EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
 import * as isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
-import { CONFIG, initConfig } from "./config";
+// 移除 CONFIG 和 initConfig 的导入
+// import { CONFIG, initConfig } from "./config";
 
 export default async function handleRequest(
   request: Request,
@@ -17,9 +18,10 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: any
 ) {
-  console.log("Initializing config in entry.server.tsx");
-  initConfig(loadContext.cloudflare.env);
-  console.log("Config initialized:", JSON.stringify(CONFIG, null, 2));
+  // 移除这些行
+  // console.log("Initializing config in entry.server.tsx");
+  // initConfig(loadContext.cloudflare.env);
+  // console.log("Config initialized:", JSON.stringify(CONFIG, null, 2));
 
   let body;
   try {

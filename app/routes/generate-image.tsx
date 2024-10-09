@@ -3,17 +3,21 @@ import { useState } from "react";
 import { json } from "@remix-run/cloudflare";
 import { useActionData, Form, useNavigation, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/cloudflare";
-import { CONFIG } from "../config";
 import { createAppContext } from "../context";
 
 export const loader: LoaderFunction = async ({ context }) => {
-  const models = Object.entries(CONFIG.CUSTOMER_MODEL_MAP).map(([id, path]) => ({ id, path }));
-  return json({ models });
+  const appContext = createAppContext(context);
+  const { config } = appContext;
+  const models = Object.entries(config.CUSTOMER_MODEL_MAP).map(([id, path]) => ({ id, path }));
+  return json({ models, config });
 };
 
 export const action: ActionFunction = async ({ request, context }: { request: Request; context: any }) => {
+  const appContext = createAppContext(context);
+  const { imageGenerationService, config } = appContext;
+
   console.log("Generate image action started");
-  console.log("CONFIG:", JSON.stringify(CONFIG, null, 2));
+  console.log("Config:", JSON.stringify(config, null, 2));
 
   const formData = await request.formData();
   const prompt = formData.get("prompt") as string;
@@ -27,8 +31,6 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
   }
 
   try {
-    const appContext = createAppContext(context);
-    const { imageGenerationService } = appContext;
     const result = await imageGenerationService.generateImage(
       enhance ? `---tl ${prompt}` : prompt,
       model,
@@ -43,14 +45,14 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
 };
 
 const GenerateImage: FC = () => {
+  const { models, config } = useLoaderData<typeof loader>();
   const [prompt, setPrompt] = useState("");
   const [enhance, setEnhance] = useState(false);
-  const [model, setModel] = useState(CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
+  const [model, setModel] = useState(config.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
   const [size, setSize] = useState("1024x1024");
-  const [numSteps, setNumSteps] = useState(CONFIG.FLUX_NUM_STEPS);
+  const [numSteps, setNumSteps] = useState(config.FLUX_NUM_STEPS);
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
-  const { models } = useLoaderData<typeof loader>();
 
   const isSubmitting = navigation.state === "submitting";
 
@@ -61,9 +63,9 @@ const GenerateImage: FC = () => {
   const handleReset = () => {
     setPrompt("");
     setEnhance(false);
-    setModel(CONFIG.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
+    setModel(config.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"]);
     setSize("1024x1024");
-    setNumSteps(CONFIG.FLUX_NUM_STEPS);
+    setNumSteps(config.FLUX_NUM_STEPS);
   };
 
   const handlePromptChange = (e: ChangeEvent<HTMLInputElement>) => {

@@ -1,21 +1,23 @@
 import { json, type LoaderFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
-import { CONFIG } from "../config";
+import { createAppContext } from "../context";
 
 export const loader: LoaderFunction = async ({ context }) => {
+    const appContext = createAppContext(context);
+    const { config } = appContext;
     const env = context.cloudflare.env;
 
     const envVariables = {
-        API_KEY: CONFIG.API_KEY ? "CONFIG.API_KEY" : "未设置",
-        CF_ACCOUNT_LIST: CONFIG.CF_ACCOUNT_LIST.length > 0 ? "已设置" : "未设置",
-        CF_TRANSLATE_MODEL: CONFIG.CF_TRANSLATE_MODEL,
-        CF_IS_TRANSLATE: CONFIG.CF_IS_TRANSLATE ? "true" : "false",
-        USE_EXTERNAL_API: CONFIG.USE_EXTERNAL_API ? "true" : "false",
-        EXTERNAL_API: CONFIG.EXTERNAL_API,
-        EXTERNAL_MODEL: CONFIG.EXTERNAL_MODEL,
-        EXTERNAL_API_KEY: CONFIG.EXTERNAL_API_KEY ? "已设置" : "未设置",
-        FLUX_NUM_STEPS: CONFIG.FLUX_NUM_STEPS.toString(),
-        CUSTOMER_MODEL_MAP: Object.keys(CONFIG.CUSTOMER_MODEL_MAP).length > 0 ? "已设置" : "未设置",
+        API_KEY: config.API_KEY ? "已设置" : "未设置",
+        CF_ACCOUNT_LIST: config.CF_ACCOUNT_LIST.length > 0 ? "已设置" : "未设置",
+        CF_TRANSLATE_MODEL: config.CF_TRANSLATE_MODEL,
+        CF_IS_TRANSLATE: config.CF_IS_TRANSLATE ? "true" : "false",
+        USE_EXTERNAL_API: config.USE_EXTERNAL_API ? "true" : "false",
+        EXTERNAL_API: config.EXTERNAL_API,
+        EXTERNAL_MODEL: config.EXTERNAL_MODEL,
+        EXTERNAL_API_KEY: config.EXTERNAL_API_KEY ? "已设置" : "未设置",
+        FLUX_NUM_STEPS: config.FLUX_NUM_STEPS.toString(),
+        CUSTOMER_MODEL_MAP: Object.keys(config.CUSTOMER_MODEL_MAP).length > 0 ? "已设置" : "未设置",
         getme: env.getme || "未设置",  // 直接从环境变量中读取 getme
         vars_apikey: env.API_KEY || "未设置"
     };

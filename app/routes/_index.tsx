@@ -1,29 +1,20 @@
 import { json, type LoaderFunction } from "@remix-run/cloudflare";
 import { useLoaderData } from "@remix-run/react";
 import { createAppContext } from "../context";
-import { CONFIG } from "../config";
 import { AppError } from "../utils/error";
 import { Link } from "@remix-run/react";
 
 export const loader: LoaderFunction = async ({ context }) => {
   console.log("Loader started");
-  let appContext;
-  try {
-    appContext = createAppContext(context);
-    console.log("App context created");
-  } catch (error) {
-    console.error("Error creating app context:", error);
-    return json({ error: "Failed to create app context" }, { status: 500 });
-  }
-
-  const { imageGenerationService } = appContext;
+  const appContext = createAppContext(context);
+  const { imageGenerationService, config } = appContext;
 
   let cfAiStatus = "未连接";
   let configStatus = {
-    API_KEY: CONFIG.API_KEY ? "已设置" : "未设置",
-    CF_TRANSLATE_MODEL: CONFIG.CF_TRANSLATE_MODEL,
-    CF_ACCOUNT_LIST: CONFIG.CF_ACCOUNT_LIST.length > 0 ? "已设置" : "未设置",
-    CUSTOMER_MODEL_MAP: Object.keys(CONFIG.CUSTOMER_MODEL_MAP).length > 0 ? "已设置" : "未设置",
+    API_KEY: config.API_KEY ? "已设置" : "未设置",
+    CF_TRANSLATE_MODEL: config.CF_TRANSLATE_MODEL,
+    CF_ACCOUNT_LIST: config.CF_ACCOUNT_LIST.length > 0 ? "已设置" : "未设置",
+    CUSTOMER_MODEL_MAP: Object.keys(config.CUSTOMER_MODEL_MAP).length > 0 ? "已设置" : "未设置",
   };
 
   try {
