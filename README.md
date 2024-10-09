@@ -10,7 +10,7 @@ CF Flux Remix 是一个基于 Cloudflare Workers 和 Remix 框架的图像生成
 - 支持提示词翻译和优化
 - 一键部署
 - 响应式设计，现代设计
-- 图片生成不受限制，你懂的
+- 图片生成不受限制(不经审查)，你懂的
 
 ## 快速开始
 
@@ -19,15 +19,16 @@ CF Flux Remix 是一个基于 Cloudflare Workers 和 Remix 框架的图像生成
 - CloudFlare账号
 - Github/Gitlab账号
 
-### 安装 
+## 安装 
 ### [视频教程]()
 
 1. 克隆（Fork）仓库：
    ```bash
-   git clone https://github.com/yourusername/cf-flux-remix.git
+   https://github.com/yourusername/cf-flux-remix
    ```
 
-2. CloudFlare中操作：
+2. 完成部署：
+  在CloudFlare中操作
    ```bash
    1、新建一个worker
    名称为 free-flux . 注意此名称必须与Github中的Wrangler.toml文件中的名称一致。
