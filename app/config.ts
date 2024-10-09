@@ -4,7 +4,6 @@ type CustomerModelMap = {
 
 export const CONFIG = {
   API_KEY: "your_actual_api_key_here", // 请替换为实际的 API 密钥
-  CF_TRANSLATE_MODEL: "@cf/qwen/qwen1.5-14b-chat-awq",
   CF_ACCOUNT_LIST: [
     {
       account_id: "8d75f22605db146a86f364ff865aa219",
@@ -12,6 +11,7 @@ export const CONFIG = {
     },
     // 可以添加更多账户
   ],
+  CF_TRANSLATE_MODEL: "@cf/qwen/qwen1.5-14b-chat-awq",
   CF_IS_TRANSLATE: true,
   USE_EXTERNAL_API: false,
   EXTERNAL_API: "",

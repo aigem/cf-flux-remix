@@ -6,9 +6,9 @@ import { withAuth } from "../middleware/auth";
 import { withCors } from "../middleware/cors";
 import { CONFIG } from "../config";
 
-export const loader: LoaderFunction = withCors(withAuth(() => {
+export const loader: LoaderFunction = () => {
   return json({ error: "此 API 端点仅支持 POST 请求" }, { status: 405 });
-}));
+};
 
 export const action: ActionFunction = withCors(withAuth(async ({ request, context }) => {
   try {

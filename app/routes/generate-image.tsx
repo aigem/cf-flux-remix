@@ -37,9 +37,9 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
 async function generateImage(prompt: string, model: string): Promise<{ prompt: string, translatedPrompt: string, image: string }> {
   const cf_account = CONFIG.CF_ACCOUNT_LIST[Math.floor(Math.random() * CONFIG.CF_ACCOUNT_LIST.length)];
   const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${cf_account.account_id}/ai/run/${model}`;
-  
+
   const jsonBody = { prompt, num_steps: CONFIG.FLUX_NUM_STEPS };
-  
+
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -96,7 +96,7 @@ const GenerateImage: FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 px-4">
-      <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-md w-full">
+      <div className="relative bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-md w-full">
         <h1 className="text-4xl font-extrabold text-white mb-8 text-center drop-shadow-lg">
           白嫖 CF 的 Flux 生成图片
         </h1>
@@ -199,8 +199,8 @@ const GenerateImage: FC = () => {
           </div>
         )}
         {/* Decorative Elements */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="absolute top-0 left-0 w-32 h-32 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000 -z-10"></div>
+        <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000 -z-10"></div>
       </div>
     </div>
   );
