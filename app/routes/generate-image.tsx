@@ -26,6 +26,8 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
   const size = formData.get("size") as string;
   const numSteps = parseInt(formData.get("numSteps") as string, 10);
 
+  console.log("Form data:", { prompt, enhance, model, size, numSteps });
+
   if (!prompt) {
     return json({ error: "未找到提示词" }, { status: 400 });
   }
@@ -37,10 +39,14 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
       size,
       numSteps
     );
+    console.log("Image generation successful");
     return json(result);
   } catch (error) {
     console.error("生成图片时出错:", error);
-    return json({ error: "生成图片失败" }, { status: 500 });
+    if (error instanceof Error) {
+      return json({ error: `生成图片失败: ${error.message}` }, { status: 500 });
+    }
+    return json({ error: "生成图片失败: 未知错误" }, { status: 500 });
   }
 };
 

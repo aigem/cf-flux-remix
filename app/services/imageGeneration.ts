@@ -4,12 +4,20 @@ import { Config } from '../config';
 export class ImageGenerationService {
   constructor(private config: Config) {}
 
-  async generateImage(prompt: string, model: string): Promise<{ prompt: string, translatedPrompt: string, image: string }> {
+  async generateImage(prompt: string, model: string, size: string, numSteps: number): Promise<{ prompt: string, translatedPrompt: string, image: string }> {
+    console.log("Generating image with params:", { prompt, model, size, numSteps });
     const translatedPrompt = await this.translatePrompt(prompt);
+    console.log("Translated prompt:", translatedPrompt);
     const isFluxModel = model === this.config.CUSTOMER_MODEL_MAP["FLUX.1-Schnell-CF"];
-    const imageBase64 = isFluxModel ? 
-      await this.generateFluxImage(model, translatedPrompt) :
-      await this.generateStandardImage(model, translatedPrompt);
+    let imageBase64;
+    try {
+      imageBase64 = isFluxModel ? 
+        await this.generateFluxImage(model, translatedPrompt, numSteps) :
+        await this.generateStandardImage(model, translatedPrompt, size, numSteps);
+    } catch (error) {
+      console.error("Error in image generation:", error);
+      throw error;
+    }
 
     return {
       prompt,
@@ -55,17 +63,21 @@ export class ImageGenerationService {
     }
   }
 
-  private async generateStandardImage(model: string, prompt: string): Promise<string> {
-    const jsonBody = { prompt, num_steps: 20, guidance: 7.5, strength: 1, width: 1024, height: 1024 };
+  private async generateStandardImage(model: string, prompt: string, size: string, numSteps: number): Promise<string> {
+    const [width, height] = size.split('x').map(Number);
+    const jsonBody = { prompt, num_steps: numSteps, guidance: 7.5, strength: 1, width, height };
     const response = await this.postRequest(model, jsonBody);
     const imageBuffer = await response.arrayBuffer();
     return this.arrayBufferToBase64(imageBuffer);
   }
 
-  private async generateFluxImage(model: string, prompt: string): Promise<string> {
-    const jsonBody = { prompt, num_steps: this.config.FLUX_NUM_STEPS };
+  private async generateFluxImage(model: string, prompt: string, numSteps: number): Promise<string> {
+    const jsonBody = { prompt, num_steps: numSteps };
     const response = await this.postRequest(model, jsonBody);
     const jsonResponse = await response.json();
+    if (!jsonResponse.result || !jsonResponse.result.image) {
+      throw new AppError('Invalid response from Flux model', 500);
+    }
     return jsonResponse.result.image;
   }
 

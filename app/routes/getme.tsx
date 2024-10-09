@@ -1,8 +1,10 @@
-import { json, type LoaderFunction } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
+import { json, type LoaderFunction, type ActionFunction } from "@remix-run/cloudflare";
+import { useLoaderData, useActionData, Form } from "@remix-run/react";
 import { createAppContext } from "../context";
+import { withAuth } from "../middleware/auth";
+import { useState } from "react";
 
-export const loader: LoaderFunction = async ({ context }) => {
+export const loader: LoaderFunction = withAuth(async ({ context }) => {
     const appContext = createAppContext(context);
     const { config } = appContext;
     const env = context.cloudflare.env;
@@ -23,17 +25,63 @@ export const loader: LoaderFunction = async ({ context }) => {
     };
 
     return json({ envVariables });
+});
+
+export const action: ActionFunction = async ({ request, context }) => {
+    const formData = await request.formData();
+    const apiKey = formData.get("apiKey") as string;
+    const config = createAppContext(context).config;
+
+    if (apiKey === config.API_KEY) {
+        return json({ success: true });
+    } else {
+        return json({ error: "API 密钥不正确" }, { status: 401 });
+    }
 };
 
 export default function GetMe() {
-    const { envVariables } = useLoaderData<typeof loader>();
+    const loaderData = useLoaderData<typeof loader>();
+    const actionData = useActionData<typeof action>();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    if (actionData?.success) {
+        setIsAuthenticated(true);
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 via-pink-500 to-red-500">
+                <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-md w-full">
+                    <h1 className="text-4xl font-extrabold text-white mb-8 text-center">验证 API 密钥</h1>
+                    <Form method="post" className="space-y-4">
+                        <input
+                            type="password"
+                            name="apiKey"
+                            placeholder="输入 API 密钥"
+                            className="w-full px-5 py-3 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white bg-opacity-20 text-white placeholder-white placeholder-opacity-70"
+                            required
+                        />
+                        <button
+                            type="submit"
+                            className="w-full px-5 py-3 rounded-xl text-lg font-semibold text-white bg-gradient-to-r from-indigo-500 to-indigo-700 transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                        >
+                            验证
+                        </button>
+                    </Form>
+                    {actionData?.error && (
+                        <p className="mt-4 text-red-300 text-center">{actionData.error}</p>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-600 via-pink-500 to-red-500">
             <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-md w-full">
                 <h1 className="text-4xl font-extrabold text-white mb-8 text-center">Workers 环境变量</h1>
                 <div className="space-y-4">
-                    {Object.entries(envVariables).map(([key, value]) => (
+                    {Object.entries(loaderData.envVariables).map(([key, value]) => (
                         <div key={key} className="text-center">
                             <p className="text-xl font-semibold text-white">{key}:</p>
                             <p className="text-lg text-white break-all">{value}</p>
