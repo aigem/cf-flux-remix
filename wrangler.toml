@@ -15,10 +15,10 @@ assets = { directory = "./build/client" }
 enabled = true
 
 [vars]
-CF_ACCOUNT_LIST = ```[{
+CF_ACCOUNT_LIST = '''[{
     "account_id":"你的CloudFlare帐户ID",
     "token":"有Workers AI权限的API令牌 "
-}]```
+}]'''
 API_KEY = "your_api_key_here"
 CF_TRANSLATE_MODEL = "@cf/qwen/qwen1.5-14b-chat-awq"
 CF_IS_TRANSLATE = "true"
