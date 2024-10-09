@@ -8,11 +8,7 @@ import type { EntryContext } from "@remix-run/cloudflare";
 import { RemixServer } from "@remix-run/react";
 import * as isbot from "isbot";
 import { renderToReadableStream } from "react-dom/server";
-import { CONFIG } from "./config";
-
-declare global {
-  var APP_CONFIG: typeof CONFIG;
-}
+import { initConfig } from "./config";
 
 export default async function handleRequest(
   request: Request,
@@ -21,7 +17,7 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: any
 ) {
-  globalThis.APP_CONFIG = CONFIG;
+  initConfig(loadContext.env);
 
   let body;
   try {

@@ -1,47 +1,184 @@
-# Welcome to Remix + Cloudflare!
+# CF Flux Remix
 
-- 📖 [Remix docs](https://remix.run/docs)
-- 📖 [Remix Cloudflare docs](https://remix.run/guides/vite#cloudflare)
+CF Flux Remix 是一个基于 Cloudflare Workers 和 Remix 框架的图像生成应用。它利用 Cloudflare 的 AI 模型来生成图像，并提供了一个用户友好的界面和 API 接口来与这些模型进行交互。
 
-## Development
+## 功能特点
 
-Run the dev server:
+- 使用 Cloudflare 的 AI 模型生成图像
+- 支持多种图像生成模型，包括 Flux 和标准模型
+- 提供 RESTful API 接口以便集成到其他应用中
+- 支持提示词翻译和优化
+- 环境变量配置，方便部署和管理
+- 响应式设计，支持多种设备
 
-```sh
-npm run dev
+## 快速开始
+
+### 前置条件
+
+- Node.js (v20 或更高版本)
+- pnpm
+- Wrangler CLI
+
+### 安装
+
+1. 克隆仓库：
+   ```bash
+   git clone https://github.com/yourusername/cf-flux-remix.git
+   cd cf-flux-remix
+   ```
+
+2. 安装依赖：
+   ```bash
+   pnpm install
+   ```
+
+3. 配置环境变量：
+   复制 `wrangler.toml.example` 到 `wrangler.toml`，并填写必要的环境变量。
+
+### 开发
+
+运行开发服务器：
+```
+pnpm run dev
 ```
 
-To run Wrangler:
+### 构建和部署
 
-```sh
-npm run build
-npm run start
+1. 构建项目：
+   ```
+   pnpm run build
+   ```
+
+2. 预览（可选）：
+   ```
+   pnpm run preview
+   ```
+
+3. 部署到 Cloudflare Workers：
+   ```
+   pnpm run deploy
+   ```
+
+## 环境变量
+
+在 `wrangler.toml` 文件中设置以下环境变量：
+
+- `API_KEY`: API 密钥，用于身份验证
+- `CF_ACCOUNT_LIST`: Cloudflare 账户列表，JSON 格式
+- `CF_TRANSLATE_MODEL`: 翻译模型 ID
+- `CF_IS_TRANSLATE`: 是否启用翻译功能
+- `USE_EXTERNAL_API`: 是否使用外部 API
+- `EXTERNAL_API`: 外部 API 地址
+- `EXTERNAL_MODEL`: 外部模型 ID
+- `EXTERNAL_API_KEY`: 外部 API 密钥
+- `FLUX_NUM_STEPS`: Flux 模型的步数
+- `CUSTOMER_MODEL_MAP`: 客户模型映射，JSON 格式
+
+## API 文档
+
+### 生成图像
+
+- 端点：`/api/image`
+- 方法：POST
+- 请求头：
+  - `Authorization: Bearer your_api_key_here`
+  - `Content-Type: application/json`
+- 请求体：
+  ```json
+  {
+    "messages": [{"role": "user", "content": "图像描述"}],
+    "model": "模型ID",
+    "stream": false
+  }
+  ```
+- 响应：
+  ```json
+  {
+    "prompt": "原始提示词",
+    "translatedPrompt": "翻译后的提示词",
+    "image": "生成的图像数据（Base64编码）"
+  }
+  ```
+
+### 获取可用模型
+
+- 端点：`/api/models`
+- 方法：GET
+- 请求头：
+  - `Authorization: Bearer your_api_key_here`
+- 响应：
+  ```json
+  {
+    "models": [
+      {"id": "DS-8-CF", "name": "DreamShaper 8"},
+      {"id": "SD-XL-Bash-CF", "name": "Stable Diffusion XL Base"},
+      {"id": "SD-XL-Lightning-CF", "name": "Stable Diffusion XL Lightning"},
+      {"id": "FLUX.1-Schnell-CF", "name": "Flux 1 Schnell"}
+    ]
+  }
+  ```
+
+## 使用示例
+
+### 使用 cURL 生成图像
+```
+bash
+curl -X POST https://your-worker-url.workers.dev/api/image \
+-H "Authorization: Bearer your_api_key_here" \
+-H "Content-Type: application/json" \
+-d '{
+"messages": [{"role": "user", "content": "一只可爱的猫咪"}],
+"model": "DS-8-CF"
+}'
 ```
 
-## Typegen
-
-Generate types for your Cloudflare bindings in `wrangler.toml`:
-
-```sh
-npm run typegen
+### 使用 Python 请求 API
+```
+python
+import requests
+import json
+url = "https://your-worker-url.workers.dev/api/image"
+headers = {
+"Authorization": "Bearer your_api_key_here",
+"Content-Type": "application/json"
+}
+data = {
+"messages": [{"role": "user", "content": "一只可爱的猫咪"}],
+"model": "DS-8-CF"
+}
+response = requests.post(url, headers=headers, data=json.dumps(data))
+result = response.json()
+print(f"原始提示词: {result['prompt']}")
+print(f"翻译后的提示词: {result['translatedPrompt']}")
+print(f"生成的图像数据: {result['image'][:50]}...") # 只打印前50个字符
 ```
 
-You will need to rerun typegen whenever you make changes to `wrangler.toml`.
+## 贡献
 
-## Deployment
+欢迎提交 Pull Requests 来改进这个项目。对于重大更改，请先开 issue 讨论您想要改变的内容。
 
-First, build your app for production:
+## 许可证
 
-```sh
-npm run build
-```
+本项目采用 MIT 许可证。详情请见 [LICENSE](LICENSE) 文件。
 
-Then, deploy your app to Cloudflare Pages:
+## 常见问题
 
-```sh
-npm run deploy
-```
+1. Q: 如何添加新的模型？
+   A: 在 `wrangler.toml` 文件中的 `CUSTOMER_MODEL_MAP` 变量中添加新的模型 ID 和对应的 Cloudflare AI 模型路径。
 
-## Styling
+2. Q: 如何禁用翻译功能？
+   A: 在 `wrangler.toml` 文件中将 `CF_IS_TRANSLATE` 设置为 "false"。
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+3. Q: 如何调整 Flux 模型的步数？
+   A: 修改 `wrangler.toml` 文件中的 `FLUX_NUM_STEPS` 值。
+
+## 故障排除
+
+如果遇到问题，请检查以下几点：
+
+1. 确保所有环境变量都已正确设置。
+2. 检查 Cloudflare 账户和 API 令牌是否有效。
+3. 确保使用的模型 ID 在 `CUSTOMER_MODEL_MAP` 中存在。
+4. 查看 Cloudflare Workers 的日志以获取更详细的错误信息。
+
+如果问题仍然存在，请开一个 issue 并提供详细的错误信息和复现步骤。
