@@ -11,6 +11,9 @@ export const loader: LoaderFunction = () => {
 };
 
 export const action: ActionFunction = withCors(withAuth(async ({ request, context }) => {
+  console.log("API request received");
+  console.log("CONFIG:", JSON.stringify(CONFIG, null, 2));
+  
   try {
     const appContext = createAppContext(context);
     const { imageGenerationService } = appContext;

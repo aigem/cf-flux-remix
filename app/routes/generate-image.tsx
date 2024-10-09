@@ -12,6 +12,9 @@ export const loader: LoaderFunction = async ({ context }) => {
 };
 
 export const action: ActionFunction = async ({ request, context }: { request: Request; context: any }) => {
+  console.log("Generate image action started");
+  console.log("CONFIG:", JSON.stringify(CONFIG, null, 2));
+
   const formData = await request.formData();
   const prompt = formData.get("prompt") as string;
   const enhance = formData.get("enhance") === "true";
