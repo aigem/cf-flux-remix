@@ -4,36 +4,50 @@ CF Flux Remix 是一个基于 Cloudflare Workers 和 Remix 框架的图像生成
 
 ## 功能特点
 
-- 使用 Cloudflare 的 AI 模型生成图像
+- 使用 Cloudflare 的 AI 模型生成图像【免费】
 - 支持多种图像生成模型，包括 Flux 和标准模型
-- 提供 RESTful API 接口以便集成到其他应用中
+- 提供 API 接口以便集成到其他应用中
 - 支持提示词翻译和优化
-- 环境变量配置，方便部署和管理
-- 响应式设计，支持多种设备
+- 一键部署
+- 响应式设计，现代设计
+- 图片生成不受限制，你懂的
 
 ## 快速开始
 
 ### 前置条件
 
-- Node.js (v20 或更高版本)
-- pnpm
-- Wrangler CLI
+- CloudFlare账号
+- Github/Gitlab账号
 
-### 安装
+### 安装 
+### [视频教程]()
 
-1. 克隆仓库：
+1. 克隆（Fork）仓库：
    ```bash
    git clone https://github.com/yourusername/cf-flux-remix.git
-   cd cf-flux-remix
    ```
 
-2. 安装依赖：
+2. CloudFlare中操作：
    ```bash
-   pnpm install
-   ```
+   1、新建一个worker
+   名称为 free-flux . 注意此名称必须与Github中的Wrangler.toml文件中的名称一致。
+   
+   2、worker后台设置中绑定Github仓库
+   绑定Fork的本仓库
+   
+   3、填入构建命令等
+   构建命令（可选）： pnpm i
+   部署命令： pnpm run deploy
 
-3. 配置环境变量：
-   复制 `wrangler.toml.example` 到 `wrangler.toml`，并填写必要的环境变量。
+   4、触发CF Workers中部署
+   随便改动一下仓库readme文件，提交后自动触发部署
+
+   5、部署完成
+   部署完成后打开相应网站来使用，API使用看下面的说明
+   记得在worker后台设置环境变量，替换自己的CF账号ID及API令牌
+   API令牌要有Workers AI 的读取及编辑权限。
+
+   ```
 
 ### 开发
 
@@ -44,24 +58,14 @@ pnpm run dev
 
 ### 构建和部署
 
-1. 构建项目：
-   ```
-   pnpm run build
-   ```
-
-2. 预览（可选）：
-   ```
-   pnpm run preview
-   ```
-
-3. 部署到 Cloudflare Workers：
+1. 另一种方法部署到 Cloudflare Workers：
    ```
    pnpm run deploy
    ```
-
+  
 ## 环境变量
 
-在 `wrangler.toml` 文件中设置以下环境变量：
+在 `wrangler.toml` 文件中设置以下程序变量：
 
 - `API_KEY`: API 密钥，用于身份验证
 - `CF_ACCOUNT_LIST`: Cloudflare 账户列表，JSON 格式
@@ -72,7 +76,7 @@ pnpm run dev
 - `EXTERNAL_MODEL`: 外部模型 ID
 - `EXTERNAL_API_KEY`: 外部 API 密钥
 - `FLUX_NUM_STEPS`: Flux 模型的步数
-- `CUSTOMER_MODEL_MAP`: 客户模型映射，JSON 格式
+- `CUSTOMER_MODEL_MAP`: 模型映射，JSON 格式
 
 ## API 文档
 
@@ -104,7 +108,7 @@ pnpm run dev
 
 - 端点：`/api/models`
 - 方法：GET
-- 请求头：
+- 请求头（可选）：
   - `Authorization: Bearer your_api_key_here`
 - 响应：
   ```json
@@ -180,5 +184,6 @@ print(f"生成的图像数据: {result['image'][:50]}...") # 只打印前50个�
 2. 检查 Cloudflare 账户和 API 令牌是否有效。
 3. 确保使用的模型 ID 在 `CUSTOMER_MODEL_MAP` 中存在。
 4. 查看 Cloudflare Workers 的日志以获取更详细的错误信息。
+5. The name in `wrangler.toml` must match the name of your Worker.
 
 如果问题仍然存在，请开一个 issue 并提供详细的错误信息和复现步骤。
