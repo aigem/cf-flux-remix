@@ -1,5 +1,5 @@
 # Worker 名称
-name = "cf-flux-remix"
+name = "cf-remix"
 
 # 兼容性日期，确保使用最新的 Workers 运行时功能
 compatibility_date = "2024-10-04"
