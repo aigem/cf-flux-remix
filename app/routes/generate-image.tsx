@@ -1,10 +1,15 @@
 import type { FC, ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
 import { json } from "@remix-run/cloudflare";
-import { useActionData, Form, useNavigation } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/cloudflare";
+import { useActionData, Form, useNavigation, useLoaderData } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/cloudflare";
 import { CONFIG } from "../config";
 import { createAppContext } from "../context";
+
+export const loader: LoaderFunction = async ({ context }) => {
+  const models = Object.entries(CONFIG.CUSTOMER_MODEL_MAP).map(([id, path]) => ({ id, path }));
+  return json({ models });
+};
 
 export const action: ActionFunction = async ({ request, context }: { request: Request; context: any }) => {
   const formData = await request.formData();
@@ -42,6 +47,7 @@ const GenerateImage: FC = () => {
   const [numSteps, setNumSteps] = useState(CONFIG.FLUX_NUM_STEPS);
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
+  const { models } = useLoaderData<typeof loader>();
 
   const isSubmitting = navigation.state === "submitting";
 
@@ -65,6 +71,10 @@ const GenerateImage: FC = () => {
     if (isSubmitting) {
       e.preventDefault();
     }
+  };
+
+  const handleModelChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setModel(e.target.value);
   };
 
   return (
@@ -97,11 +107,13 @@ const GenerateImage: FC = () => {
               id="model"
               name="model"
               value={model}
-              onChange={(e) => setModel(e.target.value)}
+              onChange={handleModelChange}
               className="w-full px-5 py-3 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-indigo-400 bg-white bg-opacity-20 text-white transition duration-300 ease-in-out hover:bg-opacity-30"
             >
-              {Object.entries(CONFIG.CUSTOMER_MODEL_MAP).map(([key, value]) => (
-                <option key={key} value={value}>{key}</option>
+              {models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.id}
+                </option>
               ))}
             </select>
           </div>

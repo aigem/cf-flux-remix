@@ -18,6 +18,7 @@ export const CONFIG = {
   EXTERNAL_API_KEY: "",
   FLUX_NUM_STEPS: 6,
   CUSTOMER_MODEL_MAP: {} as CustomerModelMap,
+  getme: "",
 };
 
 export function initConfig(env: any) {
@@ -31,6 +32,7 @@ export function initConfig(env: any) {
   CONFIG.EXTERNAL_API_KEY = env.EXTERNAL_API_KEY || "";
   CONFIG.FLUX_NUM_STEPS = parseInt(env.FLUX_NUM_STEPS || "6", 10);
   CONFIG.CUSTOMER_MODEL_MAP = JSON.parse(env.CUSTOMER_MODEL_MAP || "{}");
+  CONFIG.getme = env.getme || "";
   
   console.log("Config initialized:", JSON.stringify(CONFIG, null, 2));
 }
