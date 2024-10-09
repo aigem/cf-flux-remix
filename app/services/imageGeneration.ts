@@ -70,12 +70,13 @@ export class ImageGenerationService {
   }
 
   private async postRequest(model: string, jsonBody: object): Promise<Response> {
-    const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${this.config.CF_ACCOUNT_ID}/ai/run/${model}`;
+    const cf_account = this.config.CF_ACCOUNT_LIST[Math.floor(Math.random() * this.config.CF_ACCOUNT_LIST.length)];
+    const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${cf_account.account_id}/ai/run/${model}`;
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.config.CF_API_TOKEN}`,
+          'Authorization': `Bearer ${cf_account.token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(jsonBody)
