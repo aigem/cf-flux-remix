@@ -17,7 +17,8 @@ export default async function handleRequest(
   remixContext: EntryContext,
   loadContext: any
 ) {
-  initConfig(loadContext.env);
+  console.log("Initializing config in entry.server.tsx");
+  initConfig(loadContext.cloudflare.env);
 
   let body;
   try {

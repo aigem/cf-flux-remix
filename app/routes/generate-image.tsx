@@ -34,33 +34,6 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
   }
 };
 
-async function generateImage(prompt: string, model: string): Promise<{ prompt: string, translatedPrompt: string, image: string }> {
-  const cf_account = CONFIG.CF_ACCOUNT_LIST[Math.floor(Math.random() * CONFIG.CF_ACCOUNT_LIST.length)];
-  const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${cf_account.account_id}/ai/run/${model}`;
-
-  const jsonBody = { prompt, num_steps: CONFIG.FLUX_NUM_STEPS };
-
-  const response = await fetch(apiUrl, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${cf_account.token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(jsonBody)
-  });
-
-  if (!response.ok) {
-    throw new Error('Cloudflare API request failed: ' + response.status);
-  }
-
-  const jsonResponse = await response.json();
-  return {
-    prompt,
-    translatedPrompt: prompt, // 这里可能需要根据实际情况调整
-    image: jsonResponse.result.image
-  };
-}
-
 const GenerateImage: FC = () => {
   const [prompt, setPrompt] = useState("");
   const [enhance, setEnhance] = useState(false);

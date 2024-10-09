@@ -1,9 +1,10 @@
 import type { AppLoadContext } from "@remix-run/cloudflare";
-import { ImageGenerationService } from "~/services/imageGeneration";
+import { ImageGenerationService } from "../services/imageGeneration";
+import { CONFIG } from "../config";
 
 export function createAppContext(context: AppLoadContext) {
   return {
-    imageGenerationService: new ImageGenerationService(context.env),
+    imageGenerationService: new ImageGenerationService(CONFIG),
     // 其他服务...
   };
 }

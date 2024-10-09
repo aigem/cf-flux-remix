@@ -2,7 +2,7 @@ import { AppError } from '../utils/error';
 import { Config } from '../config';
 
 export class ImageGenerationService {
-  constructor(private env: Env, private config: Config) {}
+  constructor(private config: Config) {}
 
   async generateImage(prompt: string, model: string): Promise<{ prompt: string, translatedPrompt: string, image: string }> {
     const translatedPrompt = await this.translatePrompt(prompt);
@@ -70,6 +70,9 @@ export class ImageGenerationService {
   }
 
   private async postRequest(model: string, jsonBody: object): Promise<Response> {
+    if (this.config.CF_ACCOUNT_LIST.length === 0) {
+      throw new AppError('No Cloudflare account configured', 500);
+    }
     const cf_account = this.config.CF_ACCOUNT_LIST[Math.floor(Math.random() * this.config.CF_ACCOUNT_LIST.length)];
     const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${cf_account.account_id}/ai/run/${model}`;
     try {

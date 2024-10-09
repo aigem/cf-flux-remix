@@ -22,8 +22,8 @@ export const loader: LoaderFunction = async ({ context }) => {
   let configStatus = {
     API_KEY: CONFIG.API_KEY ? "已设置" : "未设置",
     CF_TRANSLATE_MODEL: CONFIG.CF_TRANSLATE_MODEL,
-    CF_ACCOUNT_ID: CONFIG.CF_ACCOUNT_ID ? "已设置" : "未设置",
-    CF_API_TOKEN: CONFIG.CF_API_TOKEN ? "已设置" : "未设置",
+    CF_ACCOUNT_LIST: CONFIG.CF_ACCOUNT_LIST.length > 0 ? "已设置" : "未设置",
+    CUSTOMER_MODEL_MAP: Object.keys(CONFIG.CUSTOMER_MODEL_MAP).length > 0 ? "已设置" : "未设置",
   };
 
   try {

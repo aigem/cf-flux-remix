@@ -21,9 +21,9 @@ export const CONFIG = {
 };
 
 export function initConfig(env: any) {
-  CONFIG.API_KEY = env.API_KEY || "default_api_key";
+  CONFIG.API_KEY = env.API_KEY || "";
   CONFIG.CF_ACCOUNT_LIST = JSON.parse(env.CF_ACCOUNT_LIST || "[]");
-  CONFIG.CF_TRANSLATE_MODEL = env.CF_TRANSLATE_MODEL || "@cf/qwen/qwen1.5-14b-chat-awq";
+  CONFIG.CF_TRANSLATE_MODEL = env.CF_TRANSLATE_MODEL || "";
   CONFIG.CF_IS_TRANSLATE = env.CF_IS_TRANSLATE === "true";
   CONFIG.USE_EXTERNAL_API = env.USE_EXTERNAL_API === "true";
   CONFIG.EXTERNAL_API = env.EXTERNAL_API || "";
@@ -31,6 +31,8 @@ export function initConfig(env: any) {
   CONFIG.EXTERNAL_API_KEY = env.EXTERNAL_API_KEY || "";
   CONFIG.FLUX_NUM_STEPS = parseInt(env.FLUX_NUM_STEPS || "6", 10);
   CONFIG.CUSTOMER_MODEL_MAP = JSON.parse(env.CUSTOMER_MODEL_MAP || "{}");
+  
+  console.log("Config initialized:", JSON.stringify(CONFIG, null, 2));
 }
 
 export type Config = typeof CONFIG;
