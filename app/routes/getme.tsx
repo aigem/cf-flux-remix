@@ -2,7 +2,7 @@ import { json, type LoaderFunction, type ActionFunction } from "@remix-run/cloud
 import { useLoaderData, useActionData, Form } from "@remix-run/react";
 import { createAppContext } from "../context";
 import { withAuth } from "../middleware/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const loader: LoaderFunction = withAuth(async ({ context }) => {
     const appContext = createAppContext(context);
@@ -20,14 +20,14 @@ export const loader: LoaderFunction = withAuth(async ({ context }) => {
         EXTERNAL_API_KEY: config.EXTERNAL_API_KEY ? "已设置" : "未设置",
         FLUX_NUM_STEPS: config.FLUX_NUM_STEPS.toString(),
         CUSTOMER_MODEL_MAP: Object.keys(config.CUSTOMER_MODEL_MAP).length > 0 ? "已设置" : "未设置",
-        getme: env.getme || "未设置",  // 直接从环境变量中读取 getme
-        vars_apikey: env.API_KEY || "未设置"
+        getme: env.getme || "未设置",
+        vars_apikey: env.API_KEY
     };
 
-    return json({ envVariables });
+    return json({ envVariables, apiKey: config.API_KEY });
 });
 
-export const action: ActionFunction = async ({ request, context }) => {
+export const action: ActionFunction = withAuth(async ({ request, context }) => {
     const formData = await request.formData();
     const apiKey = formData.get("apiKey") as string;
     const config = createAppContext(context).config;
@@ -37,16 +37,18 @@ export const action: ActionFunction = async ({ request, context }) => {
     } else {
         return json({ error: "API 密钥不正确" }, { status: 401 });
     }
-};
+});
 
 export default function GetMe() {
     const loaderData = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    if (actionData?.success) {
-        setIsAuthenticated(true);
-    }
+    useEffect(() => {
+        if (actionData?.success) {
+            setIsAuthenticated(true);
+        }
+    }, [actionData]);
 
     if (!isAuthenticated) {
         return (

@@ -6,6 +6,12 @@ export function withAuth(fn: LoaderFunction | ActionFunction): LoaderFunction | 
   return async (args) => {
     const { request, context } = args;
     const config = getConfig(context.cloudflare.env);
+    
+    // 如果是 GET 请求，不进行身份验证
+    if (request.method === "GET") {
+      return fn(args);
+    }
+
     const authHeader = request.headers.get("Authorization");
     console.log("Auth header:", authHeader);
     console.log("config.API_KEY:", config.API_KEY);

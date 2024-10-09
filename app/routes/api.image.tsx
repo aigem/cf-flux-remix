@@ -15,7 +15,7 @@ export const action: ActionFunction = withCors(withAuth(async ({ request, contex
 
   console.log("API request received");
   console.log("Config:", JSON.stringify(config, null, 2));
-  
+
   try {
     const data = await request.json();
     const { messages, model: requestedModel, stream } = data;

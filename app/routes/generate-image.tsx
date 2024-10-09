@@ -22,14 +22,19 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
   const formData = await request.formData();
   const prompt = formData.get("prompt") as string;
   const enhance = formData.get("enhance") === "true";
-  const model = formData.get("model") as string;
+  const modelId = formData.get("model") as string;
   const size = formData.get("size") as string;
   const numSteps = parseInt(formData.get("numSteps") as string, 10);
 
-  console.log("Form data:", { prompt, enhance, model, size, numSteps });
+  console.log("Form data:", { prompt, enhance, modelId, size, numSteps });
 
   if (!prompt) {
     return json({ error: "未找到提示词" }, { status: 400 });
+  }
+
+  const model = config.CUSTOMER_MODEL_MAP[modelId];
+  if (!model) {
+    return json({ error: "无效的模型" }, { status: 400 });
   }
 
   try {
@@ -43,8 +48,8 @@ export const action: ActionFunction = async ({ request, context }: { request: Re
     return json(result);
   } catch (error) {
     console.error("生成图片时出错:", error);
-    if (error instanceof Error) {
-      return json({ error: `生成图片失败: ${error.message}` }, { status: 500 });
+    if (error instanceof AppError) {
+      return json({ error: `生成图片失败: ${error.message}` }, { status: error.status || 500 });
     }
     return json({ error: "生成图片失败: 未知错误" }, { status: 500 });
   }

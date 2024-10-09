@@ -81,27 +81,30 @@ export class ImageGenerationService {
     return jsonResponse.result.image;
   }
 
-  private async postRequest(model: string, jsonBody: object): Promise<Response> {
-    if (this.config.CF_ACCOUNT_LIST.length === 0) {
-      throw new AppError('No Cloudflare account configured', 500);
-    }
-    const cf_account = this.config.CF_ACCOUNT_LIST[Math.floor(Math.random() * this.config.CF_ACCOUNT_LIST.length)];
-    const apiUrl = `https://api.cloudflare.com/client/v4/accounts/${cf_account.account_id}/ai/run/${model}`;
+  private async postRequest(model: string, jsonBody: any): Promise<Response> {
+    const account = this.config.CF_ACCOUNT_LIST[Math.floor(Math.random() * this.config.CF_ACCOUNT_LIST.length)];
+    const url = `https://api.cloudflare.com/client/v4/accounts/${account.account_id}/ai/run/${model}`;
+    const headers = {
+      'Authorization': `Bearer ${account.token}`,
+      'Content-Type': 'application/json',
+    };
+
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(url, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${cf_account.token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(jsonBody)
+        headers: headers,
+        body: JSON.stringify(jsonBody),
       });
 
       if (!response.ok) {
-        throw new AppError(`Cloudflare API request failed: ${response.status}`, response.status);
+        const errorText = await response.text();
+        console.error(`Cloudflare API request failed: ${response.status}`, errorText);
+        throw new AppError(`Cloudflare API request failed: ${response.status} - ${errorText}`, response.status);
       }
+
       return response;
     } catch (error) {
+      console.error("Error in postRequest:", error);
       if (error instanceof AppError) {
         throw error;
       }
