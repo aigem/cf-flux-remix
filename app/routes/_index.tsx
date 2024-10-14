@@ -51,7 +51,7 @@ export default function Index() {
               >
                 访问 Github
               </Link>
-            </li>
+            </li>{/*
             <li>
               <Link
                 to="https://github.com/aigem/CFr2-webdav"
@@ -68,7 +68,7 @@ export default function Index() {
                 自行搭建：全平台视频下载助手
               </Link>
             </li>
-            {/* 可以在这里添加更多的导航项 */}
+             可以在这里添加更多的导航项 */}
           </ul>
         </nav>
       </div>
