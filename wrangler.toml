@@ -1,6 +1,5 @@
 # Worker 名称,与CF中的Worker名称必须一致
 name = "free-flux"
-
 # 兼容性日期，确保使用最新的 Workers 运行时功能
 compatibility_date = "2024-10-04"
 
