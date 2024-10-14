@@ -41,7 +41,7 @@ export default function Index() {
                 to="/generate-image"
                 className="block w-full text-center px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-xl transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               >
-                白嫖 CF 的 Flux 生成图片
+                我的 CF 的 Flux 生成图片
               </Link>
             </li>
             <li>
@@ -49,9 +49,9 @@ export default function Index() {
                 to="https://github.com/aigem/cf-flux-remix"
                 className="block w-full text-center px-6 py-3 text-lg font-semibold text-white bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-xl transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-400"
               >
-                访问 Github
+                访问我的Github
               </Link>
-            </li>
+            </li>{/*
             <li>
               <Link
                 to="https://github.com/aigem/CFr2-webdav"
@@ -68,7 +68,7 @@ export default function Index() {
                 自行搭建：全平台视频下载助手
               </Link>
             </li>
-            {/* 可以在这里添加更多的导航项 */}
+             可以在这里添加更多的导航项 */}
           </ul>
         </nav>
       </div>
