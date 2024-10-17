@@ -19,6 +19,7 @@ export type Config = {
   FLUX_NUM_STEPS: number;
   CUSTOMER_MODEL_MAP: { [key: string]: string };
   getme: string;
+  CHENGYU_WEBHOOK_URL?: string;
 };
 
 export function getConfig(env: any): Config {
@@ -34,5 +35,6 @@ export function getConfig(env: any): Config {
     FLUX_NUM_STEPS: parseInt(env.FLUX_NUM_STEPS || "6", 10),
     CUSTOMER_MODEL_MAP: JSON.parse(env.CUSTOMER_MODEL_MAP || "{}"),
     getme: env.getme || "",
+    CHENGYU_WEBHOOK_URL: env.CHENGYU_WEBHOOK_URL || "",
   };
 }
